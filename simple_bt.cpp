@@ -24,6 +24,33 @@ class ApproachObject : public BT::SyncActionNode
     }
 };
 
+// function Method
+BT::NodeStatus CheckBattery()
+{
+    std::cout << "Battery OK" << std::endl;
+    return BT::NodeStatus::SUCCESS;
+}
+
+// custom class Method
+class GripperInterface
+{
+    bool _open;
+public:
+    GripperInterface() : _open(true){}
+
+    BT::NodeStatus open()
+    {
+        std::cout << "Gripper open" << std::endl;
+        return BT::NodeStatus::SUCCESS;
+    }
+
+    BT::NodeStatus close()
+    {
+        std::cout << "Gripper close" << std::endl;
+        return BT::NodeStatus::SUCCESS;
+    }
+};
+
 int main()
 {
     
