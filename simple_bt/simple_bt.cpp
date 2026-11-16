@@ -8,6 +8,7 @@ using namespace std::chrono_literals;
 //Node class Method
 class ApproachObject : public BT::SyncActionNode
 {
+public:
     explicit ApproachObject(const std::string &name) : BT::SyncActionNode(name, {})
     {
 
@@ -40,12 +41,14 @@ public:
 
     BT::NodeStatus open()
     {
+        _open = true;
         std::cout << "Gripper open" << std::endl;
         return BT::NodeStatus::SUCCESS;
     }
 
     BT::NodeStatus close()
     {
+        _open = false;
         std::cout << "Gripper close" << std::endl;
         return BT::NodeStatus::SUCCESS;
     }
@@ -53,5 +56,28 @@ public:
 
 int main()
 {
+    BT::BehaviorTreeFactory factory;
+    factory.registerNodeType<ApproachObject>("ApproachObject");
     
+    factory.registerSimpleCondition("CheckBattery", std::bind(CheckBattery));
+
+    GripperInterface gripper;
+
+    factory.registerSimpleAction(
+        "OpenGripper",
+        std::bind(&GripperInterface::open, &gripper)
+    );
+
+    factory.registerSimpleAction(
+        "CloseGripper",
+        std::bind(&GripperInterface::close, &gripper)
+    );
+
+    auto tree = factory.createTreeFromFile("./../bt_tree.xml");
+
+    tree.tickExactlyOnce();
+
+    tree.tickExactlyOnce();
+
+    return 0;
 }
